@@ -1,2 +1,13 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://svelte.dev/docs/kit">svelte.dev/docs/kit</a> to read the documentation</p>
+<script lang="ts">
+  import type { Game } from "$lib";
+  import GameDashboard from "$lib/components/GameDashboard.svelte";
+  import GameSetup from "$lib/components/GameSetup.svelte";
+
+  let game: Game | undefined = $state(undefined);
+</script>
+
+{#if !game}
+  <GameSetup onsubmit={(gameData: Game) => (game = gameData)} />
+{:else}
+  <GameDashboard {game} />
+{/if}

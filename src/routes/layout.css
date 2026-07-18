@@ -1,1 +1,21 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-primary: var(--color-gray-800);
+  --color-secondary: var(--color-gray-400);
+  --color-background: var(--color-black);
+
+  --color-success: var(--color-emerald-500);
+  --color-fail: var(--color-red-500);
+  --color-approve: var(--color-green-500);
+  --color-reject: var(--color-red-500);
+}
+
+@layer components {
+  .animate {
+    @apply transition-all duration-150;
+  }
+  button {
+    cursor: pointer;
+  }
+}
