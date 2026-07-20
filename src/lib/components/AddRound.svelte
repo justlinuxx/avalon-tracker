@@ -6,16 +6,22 @@
     type Round,
     type Voting,
   } from "$lib";
+
   type Vote = "approve" | "reject";
   let {
     players,
     round_id,
+    default_leader: leader,
     onsubmit,
-  }: { players: Player[]; round_id: number; onsubmit: (arg: Round) => void } =
-    $props();
+  }: {
+    players: Player[];
+    round_id: number;
+    default_leader?: Player;
+    onsubmit: (arg: Round) => void;
+  } = $props();
 
   // svelte-ignore state_referenced_locally
-  let leader = $state(players[round_id % players.length]);
+  if (!leader) leader = players[round_id % players.length];
   let selected_players: Player[] = $state([]);
 
   let votes: Record<number, Vote> = $state({});

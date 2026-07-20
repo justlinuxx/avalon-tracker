@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { pushState } from "$app/navigation";
+  import { pushState, replaceState } from "$app/navigation";
   import type { Game, Player, Round } from "$lib";
-  import { onMount } from "svelte";
   import AddRound from "./AddRound.svelte";
   import { page } from "$app/state";
 
   let { game }: { game: Game } = $props();
+  replaceState("", { phase: "normal", ...page.state });
 
   $inspect(game);
 
@@ -14,9 +14,12 @@
     history.back();
   }
 
-  onMount(() => {
-    pushState("", { phase: "normal" });
-  });
+  function nextLeader() {
+    const last_round = game.rounds.at(-1);
+    if (!last_round) return game.players[0];
+    const last_leader = last_round.leader;
+    return game.players.at((last_leader.id + 1) % game.players.length);
+  }
 </script>
 
 {#snippet PlayerRow(player: Player)}
@@ -25,11 +28,16 @@
     {#each game.rounds as round (round.id)}
       {@const approved = round.voting.approved.indexOf(player) != -1}
       {@const selected = round.selectedPlayers.indexOf(player) != -1}
-      {#if approved}
-        <td class="text-approve" class:font-extrabold={selected}>A</td>
-      {:else}
-        <td class="text-reject" class:font-extrabold={selected}>R</td>
-      {/if}
+      {@const game_leader = round.leader === player}
+      <td>
+        <span
+          class="p-1 {selected
+            ? 'font-extrabold rounded-full border border-white'
+            : ''}"
+          class:text-approve={approved}
+          class:text-reject={!approved}>{approved ? "A" : "R"}</span
+        >
+      </td>
     {/each}
   </tr>
 {/snippet}
@@ -46,7 +54,7 @@
             <tr class="p-2 *:min-w-16">
               <th class="p-2">Name</th>
               {#each game.rounds as round, index}
-                <th class="p-2">Round {index + 1}</th>
+                <th class="p-2">{index + 1} - {round.leader.name}</th>
               {/each}
             </tr>
             {#each game.players as player (player.id)}
@@ -72,7 +80,8 @@
       </div>
       <button
         class="px-4 text-2xl font-bold"
-        onclick={() => pushState("", { phase: "voting" })}>+</button
+        onclick={() => pushState("", { ...page.state, phase: "voting" })}
+        >+</button
       >
     </div>
   </div>
@@ -80,6 +89,7 @@
   <AddRound
     players={game.players}
     round_id={game.rounds.length}
+    default_leader={nextLeader()}
     onsubmit={(round) => handleRound(round)}
   />
 {/if}

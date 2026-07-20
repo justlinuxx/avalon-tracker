@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { dev } from "$app/environment";
   import { createGame } from "$lib";
   import AddPlayer from "./GameSetup.d/AddPlayer.svelte";
   import PlayersList from "./GameSetup.d/PlayersList.svelte";
@@ -6,6 +7,8 @@
   let { onsubmit }: { onsubmit: Function } = $props();
 
   let players: string[] = $state([]);
+
+  if (dev) players = ["Peter", "Heli", "Janko", "Hanka", "Mia"];
 
   function addPlayer(playerName: string) {
     playerName = playerName.trim();
