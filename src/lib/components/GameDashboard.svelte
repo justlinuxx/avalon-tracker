@@ -85,6 +85,11 @@
       >
     </div>
   </div>
+  <button
+    class="bg-primary border border-secondary rounded-md p-2 text-xl my-2"
+    onclick={() => pushState("", { ...page.state, phase: "exporting" })}
+    >Export Game</button
+  >
 {:else if page.state.phase == "voting"}
   <AddRound
     players={game.players}
@@ -92,4 +97,6 @@
     default_leader={nextLeader()}
     onsubmit={(round) => handleRound(round)}
   />
+{:else if page.state.phase == "exporting"}
+  <code>{JSON.stringify(game)}</code>
 {/if}

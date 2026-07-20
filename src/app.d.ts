@@ -7,7 +7,7 @@ declare global {
     // interface PageData {}
     interface PageState {
       game_running?: boolean = false,
-      phase?: "normal" | "voting" = "normal"
+      phase?: "normal" | "voting" | "exporting" = "normal"
     }
     // interface Platform {}
   }
