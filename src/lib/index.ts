@@ -2,13 +2,6 @@ export interface Game {
   players: Player[]
   rounds: Round[]
   missions: Mission[]
-  result?: Result
-}
-
-export enum Result {
-  GoodWins,
-  BadWins,
-  MerlinSabotaged
 }
 
 export interface Player {
@@ -17,45 +10,42 @@ export interface Player {
 }
 
 export interface Round {
-  id: Number
+  id: number
   leader: Player
-  selectedPlayers: Player[]
+  selected_players: Player[]
   voting: Voting
   mission?: Mission
 }
 
 export interface Mission {
-  roundId: Number
-  selectedPlayers: Player[]
-  numFails: number
+  round_id: number
+  selected_players: Player[]
+  num_fails: number
 }
 
-export enum Card {
-  Success,
-  Fail
+export enum Vote {
+  Approve,
+  Reject
 }
 
-export interface Voting {
-  approved: Player[]
-  rejected: Player[]
-}
+export type Voting = Map<Player, Vote>
 
 export function createGame({ players }: { players: string[] }): Game {
   let game: Game = { players: [], rounds: [], missions: [] }
   for (let i = 0; i < players.length; i++) {
-    game.players.push({
+    game.players[i] = {
       id: i,
       name: players[i]
-    })
+    }
   }
   return game
 }
 
-export function createRound({ id, leader, selectedPlayers, voting, mission }: Round) {
+export function createRound({ id, leader, selected_players, voting, mission }: Round) {
   return {
     id,
     leader,
-    selectedPlayers,
+    selected_players,
     voting,
     mission
   }

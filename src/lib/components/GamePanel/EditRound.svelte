@@ -5,28 +5,32 @@
     type Player,
     type Round,
     type Voting,
+    Vote,
   } from "$lib";
+  import { SvelteMap } from "svelte/reactivity";
 
-  type Vote = "approve" | "reject";
   let {
     players,
-    round_id,
-    default_leader: leader,
+    default: default_values,
     onsubmit,
   }: {
     players: Player[];
-    round_id: number;
-    default_leader?: Player;
+    default: Partial<Round>;
     onsubmit: (arg: Round) => void;
   } = $props();
 
-  // svelte-ignore state_referenced_locally
-  if (!leader) leader = players[round_id % players.length];
-  let selected_players: Player[] = $state([]);
+  let round_id = $state(default_values.id || 0);
 
-  let votes: Record<number, Vote> = $state({});
+  let leader: Player = $state(default_values.leader || players[0]);
 
-  let num_fails = $state(0);
+  let selected_players: Player[] = $state(
+    default_values.selected_players || [],
+  );
+
+  let voting: Voting = new SvelteMap(default_values.voting);
+
+  let num_fails = $state(default_values.mission?.num_fails || 0);
+  $inspect(voting);
 
   function selectPlayer(player: Player) {
     if (selected_players.indexOf(player) == -1) selected_players.push(player);
@@ -36,31 +40,36 @@
       );
   }
 
+  function selectVote(player: Player, vote: Vote) {
+    if (voting.get(player) === vote) voting.delete(player);
+    else voting.set(player, vote);
+  }
+
   function handleSubmit() {
-    let voting: Voting = { approved: [], rejected: [] };
-    let predict_votes: Player[] = [];
     let mission: Mission | undefined;
 
+    let approved_num = voting
+      .values()
+      .reduce((count, vote) => (vote == Vote.Approve ? count + 1 : count), 0);
+    let rejected_num = voting.size - approved_num;
+
     for (const player of players) {
-      if (!votes.hasOwnProperty(player.id)) {
-        predict_votes.push(player);
-        continue;
+      if (!voting.has(player)) {
+        if (approved_num > rejected_num) voting.set(player, Vote.Reject);
+        else voting.set(player, Vote.Approve);
       }
-      if (votes[player.id] == "approve") voting.approved.push(player);
-      else voting.rejected.push(player);
     }
 
-    if (predict_votes.length > 0) {
-      if (voting.approved.length <= voting.rejected.length)
-        voting.approved.push(...predict_votes);
-      else voting.rejected.push(...predict_votes);
-    }
+    approved_num = voting
+      .values()
+      .reduce((count, vote) => (vote == Vote.Approve ? count + 1 : count), 0);
+    rejected_num = voting.size - approved_num;
 
-    if (voting.rejected.length < voting.approved.length) {
+    if (approved_num > players.length / 2) {
       mission = {
-        selectedPlayers: selected_players,
-        roundId: round_id,
-        numFails: num_fails,
+        selected_players,
+        round_id,
+        num_fails,
       };
     }
 
@@ -68,7 +77,7 @@
       createRound({
         id: round_id,
         leader,
-        selectedPlayers: selected_players,
+        selected_players,
         voting,
         mission,
       }),
@@ -116,16 +125,16 @@
           <span>{player.name}</span>
           <div class="rounded-md border border-secondary *:p-1 overflow-hidden">
             <button
-              class={votes[player.id] == "approve"
+              class={voting.get(player) === Vote.Approve
                 ? "bg-approve text-black"
                 : "text-approve"}
-              onclick={() => (votes[player.id] = "approve")}>Approve</button
+              onclick={() => selectVote(player, Vote.Approve)}>Approve</button
             >
             <button
-              class={votes[player.id] == "reject"
+              class={voting.get(player) === Vote.Reject
                 ? "bg-reject text-black"
                 : "text-reject"}
-              onclick={() => (votes[player.id] = "reject")}>Reject</button
+              onclick={() => selectVote(player, Vote.Reject)}>Reject</button
             >
           </div>
         </div>

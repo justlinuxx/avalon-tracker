@@ -1,17 +1,20 @@
 <script lang="ts">
   import { pushState, replaceState } from "$app/navigation";
-  import type { Game, Player, Round } from "$lib";
-  import AddRound from "./AddRound.svelte";
+  import { Vote, type Game, type Player, type Round } from "$lib";
+  import EditRound from "./GamePanel/EditRound.svelte";
   import { page } from "$app/state";
 
   let { game }: { game: Game } = $props();
-  replaceState("", { phase: "normal", ...page.state });
+
+  let editing_round_id: number = $state(0);
 
   $inspect(game);
 
   function handleRound(round: Round) {
-    game.rounds.push(round);
-    history.back();
+    if (game.rounds.length <= round.id) game.rounds.push(round);
+    else game.rounds[round.id] = round;
+    replaceState("", { ...page.state, editing_round: false });
+    editing_round_id = game.rounds.length;
   }
 
   function nextLeader() {
@@ -26,8 +29,8 @@
   <tr class="text-center *:p-2 *:min-w-16">
     <td>{player.name}</td>
     {#each game.rounds as round (round.id)}
-      {@const approved = round.voting.approved.indexOf(player) != -1}
-      {@const selected = round.selectedPlayers.indexOf(player) != -1}
+      {@const approved = round.voting.get(player) == Vote.Approve}
+      {@const selected = round.selected_players.indexOf(player) != -1}
       {@const game_leader = round.leader === player}
       <td>
         <span
@@ -42,7 +45,7 @@
   </tr>
 {/snippet}
 
-{#if page.state.phase == "normal"}
+{#if !page.state.exporting_game}
   <div
     class="flex flex-col border border-secondary bg-primary rounded-md divide-y divide-secondary"
   >
@@ -54,7 +57,17 @@
             <tr class="p-2 *:min-w-16">
               <th class="p-2">Name</th>
               {#each game.rounds as round, index}
-                <th class="p-2">{index + 1} - {round.leader.name}</th>
+                <th class="p-2"
+                  ><button
+                    onclick={() => {
+                      editing_round_id = index;
+                      pushState("", {
+                        ...page.state,
+                        editing_round: true,
+                      });
+                    }}>{index + 1} - {round.leader.name}</button
+                  ></th
+                >
               {/each}
             </tr>
             {#each game.players as player (player.id)}
@@ -66,9 +79,9 @@
                 {#if round.mission}
                   <td>
                     <span class="text-success"
-                      >{round.selectedPlayers.length -
-                        round.mission.numFails}</span
-                    >/<span class="text-fail">{round.mission.numFails}</span>
+                      >{round.selected_players.length -
+                        round.mission.num_fails}</span
+                    >/<span class="text-fail">{round.mission.num_fails}</span>
                   </td>
                 {:else}
                   <td></td>
@@ -80,23 +93,32 @@
       </div>
       <button
         class="px-4 text-2xl font-bold"
-        onclick={() => pushState("", { ...page.state, phase: "voting" })}
-        >+</button
+        onclick={() => {
+          editing_round_id = game.rounds.length;
+          pushState("", { ...page.state, editing_round: true });
+        }}>+</button
       >
     </div>
   </div>
+  {#key editing_round_id}
+    {#if page.state.editing_round}
+      <div class="my-2">
+        <EditRound
+          players={game.players}
+          default={game.rounds[editing_round_id] || {
+            id: game.rounds.length,
+            leader: nextLeader(),
+          }}
+          onsubmit={(round) => handleRound(round)}
+        />
+      </div>
+    {/if}
+  {/key}
   <button
     class="bg-primary border border-secondary rounded-md p-2 text-xl my-2"
-    onclick={() => pushState("", { ...page.state, phase: "exporting" })}
+    onclick={() => pushState("", { ...page.state, exporting_game: true })}
     >Export Game</button
   >
-{:else if page.state.phase == "voting"}
-  <AddRound
-    players={game.players}
-    round_id={game.rounds.length}
-    default_leader={nextLeader()}
-    onsubmit={(round) => handleRound(round)}
-  />
-{:else if page.state.phase == "exporting"}
+{:else}
   <code>{JSON.stringify(game)}</code>
 {/if}

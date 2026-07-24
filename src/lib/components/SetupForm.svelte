@@ -1,8 +1,8 @@
 <script lang="ts">
   import { dev } from "$app/environment";
   import { createGame } from "$lib";
-  import AddPlayer from "./GameSetup.d/AddPlayer.svelte";
-  import PlayersList from "./GameSetup.d/PlayersList.svelte";
+  import AddPlayer from "./SetupForm/AddPlayer.svelte";
+  import PlayersList from "./SetupForm/PlayersList.svelte";
 
   let { onsubmit }: { onsubmit: Function } = $props();
 
