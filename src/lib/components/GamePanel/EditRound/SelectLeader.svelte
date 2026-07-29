@@ -1,6 +1,5 @@
 <script lang="ts">
     import type { Player } from "$lib";
-    import Select from "$lib/components/Select.svelte";
 
     let {
         players,
@@ -8,4 +7,11 @@
     }: { players: Player[]; selected_player: Player } = $props();
 </script>
 
-<Select options={players} bind:value={selected_player} value_row="name" />
+<select
+    bind:value={selected_player}
+    class="border border-secondary rounded-md p-1"
+>
+    {#each players as player (player.id)}
+        <option value={player}>{player.name}</option>
+    {/each}
+</select>

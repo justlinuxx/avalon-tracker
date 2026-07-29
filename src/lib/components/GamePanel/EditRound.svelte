@@ -124,6 +124,6 @@
         </div>
     </div>
     <button class="font-bold text-xl" onclick={() => handleSubmit()}
-        >Add Round</button
+        >Save Round</button
     >
 </div>
