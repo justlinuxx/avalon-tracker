@@ -30,7 +30,6 @@ export class Game implements GameInterface {
     }
 
     static load_from_json(json: string): Game {
-        console.log(JSON.parse(json, reviver))
         return new Game(JSON.parse(json, reviver))
     }
 }
@@ -83,11 +82,9 @@ function reviver(key: any, value: any) {
         return new Map(value)
     }
     if (value == "Approve") {
-        console.log('approved!!!!')
         return Vote.Approve
     }
     if (value == "Reject") {
-        console.log('rejected!!!!')
         return Vote.Reject
     }
     return value
