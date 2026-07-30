@@ -10,5 +10,5 @@ export let load_game = query((): string | undefined => {
 })
 
 export let delete_game = command(() => {
-    getRequestEvent().cookies.delete("game", { path: "" })
+    getRequestEvent().cookies.delete("game", { path: "/" })
 })
