@@ -15,9 +15,23 @@ export class Game implements GameInterface {
         this.missions = game.missions || []
     }
 
-    add_round = (round: Round) => {
+    add_round(round: Round) {
         this.rounds.push(round)
+        console.log(round)
         if (round.mission) this.missions.push(round.mission)
+    }
+
+    to_json(): string {
+        return JSON.stringify({
+            players: this.players,
+            rounds: $state.snapshot(this.rounds),
+            missions: this.missions
+        }, replacer)
+    }
+
+    static load_from_json(json: string): Game {
+        console.log(JSON.parse(json, reviver))
+        return new Game(JSON.parse(json, reviver))
     }
 }
 
@@ -41,11 +55,11 @@ export interface Mission {
 }
 
 export enum Vote {
-    Approve,
-    Reject
+    Approve = "Approve",
+    Reject = "Reject"
 }
 
-export type Voting = Map<Player, Vote>
+export type Voting = Map<number, Vote>
 
 export function createRound({ id, leader, selected_players, voting, mission }: Round) {
     return {
@@ -57,16 +71,24 @@ export function createRound({ id, leader, selected_players, voting, mission }: R
     }
 }
 
-export function replacer(key: any, value: any) {
+function replacer(key: any, value: any) {
     if (value instanceof Map) {
         return value.entries().toArray()
     }
     return value
 }
 
-export function reviver(key: any, value: any) {
+function reviver(key: any, value: any) {
     if (key == "voting") {
         return new Map(value)
+    }
+    if (value == "Approve") {
+        console.log('approved!!!!')
+        return Vote.Approve
+    }
+    if (value == "Reject") {
+        console.log('rejected!!!!')
+        return Vote.Reject
     }
     return value
 }

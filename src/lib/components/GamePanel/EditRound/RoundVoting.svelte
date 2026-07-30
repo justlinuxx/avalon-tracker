@@ -4,8 +4,8 @@
     let { players, voting }: { players: Player[]; voting: Voting } = $props();
 
     function selectVote(player: Player, vote: Vote) {
-        if (voting.get(player) === vote) voting.delete(player);
-        else voting.set(player, vote);
+        if (voting.get(player.id) === vote) voting.delete(player.id);
+        else voting.set(player.id, vote);
     }
 </script>
 
@@ -19,14 +19,14 @@
                 class="rounded-md border border-secondary *:p-1 overflow-hidden"
             >
                 <button
-                    class={voting.get(player) === Vote.Approve
+                    class={voting.get(player.id) === Vote.Approve
                         ? "bg-approve text-black"
                         : "text-approve"}
                     onclick={() => selectVote(player, Vote.Approve)}
                     >Approve</button
                 >
                 <button
-                    class={voting.get(player) === Vote.Reject
+                    class={voting.get(player.id) === Vote.Reject
                         ? "bg-reject text-black"
                         : "text-reject"}
                     onclick={() => selectVote(player, Vote.Reject)}

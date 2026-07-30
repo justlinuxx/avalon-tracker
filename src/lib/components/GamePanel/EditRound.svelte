@@ -42,10 +42,10 @@
         let rejected_num = voting.size - approved_num;
 
         for (const player of players) {
-            if (!voting.has(player)) {
+            if (!voting.has(player.id)) {
                 if (approved_num > rejected_num)
-                    voting.set(player, Vote.Reject);
-                else voting.set(player, Vote.Approve);
+                    voting.set(player.id, Vote.Reject);
+                else voting.set(player.id, Vote.Approve);
             }
         }
 

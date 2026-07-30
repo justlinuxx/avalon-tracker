@@ -1,7 +1,6 @@
 <script lang="ts">
     import { pushState, replaceState } from "$app/navigation";
     import {
-        replacer,
         Vote,
         type Game,
         type Player,
@@ -9,6 +8,7 @@
     } from "$lib/index.svelte";
     import EditRound from "./GamePanel/EditRound.svelte";
     import { page } from "$app/state";
+    import { delete_game, save_game } from "$lib/cookies.remote";
 
     let { game }: { game: Game } = $props();
 
@@ -17,6 +17,7 @@
     function handleRound(round: Round) {
         if (game.rounds.length <= round.id) game.add_round(round);
         else game.rounds[round.id] = round;
+        save_game(game.to_json());
         replaceState("", { ...page.state, editing_round: false });
         editing_round_id = game.rounds.length;
     }
@@ -33,11 +34,11 @@
     <tr class="text-center *:p-2 *:min-w-16">
         <td>{player.name}</td>
         {#each game.rounds as round (round.id)}
-            {@const approved = round.voting.get(player) == Vote.Approve}
-            {@const selected = round.selected_players.some(
+            {const approved = round.voting.get(player.id) == Vote.Approve}
+            {const selected = round.selected_players.some(
                 (p) => p.id === player.id,
             )}
-            {@const game_leader = round.leader === player}
+            {const game_leader = round.leader === player}
             <td>
                 <span
                     class="p-1 {selected
@@ -138,15 +139,13 @@
         onclick={() => pushState("", { ...page.state, exporting_game: true })}
         >Export Game</button
     >
-{:else}
-    <code
-        >{JSON.stringify(
-            {
-                players: game.players,
-                rounds: $state.snapshot(game.rounds),
-                missions: game.missions,
-            },
-            replacer,
-        )}</code
+    <button
+        class="bg-primary border border-secondary rounded-md p-2 text-xl my-2"
+        onclick={() => {
+            delete_game();
+            pushState("", { game_running: false });
+        }}>Exit Game</button
     >
+{:else}
+    <code>{game.to_json()}</code>
 {/if}
