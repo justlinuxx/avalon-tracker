@@ -34,11 +34,10 @@
     <tr class="text-center *:p-2 *:min-w-16">
         <td>{player.name}</td>
         {#each game.rounds as round (round.id)}
-            {const approved = round.voting.get(player.id) == Vote.Approve}
-            {const selected = round.selected_players.some(
+            {const approved = $derived(round.voting.get(player.id) == Vote.Approve)}
+            {const selected = $derived(round.selected_players.some(
                 (p) => p.id === player.id,
-            )}
-            {const game_leader = round.leader === player}
+            ))}
             <td>
                 <span
                     class="p-1 {selected

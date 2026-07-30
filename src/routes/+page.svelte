@@ -16,14 +16,16 @@
     });
 </script>
 
-{#if !page.state.game_running}
-    <SetupForm
-        onsubmit={(gameData: Game) => {
-            game = gameData;
-            save_game(game.to_json());
-            pushState("", { game_running: true });
-        }}
-    />
-{:else if game}
-    <GamePanel {game} />
-{/if}
+{#await load_game() then}
+    {#if !page.state.game_running}
+        <SetupForm
+            onsubmit={(gameData: Game) => {
+                game = gameData;
+                save_game(game.to_json());
+                pushState("", { game_running: true });
+            }}
+        />
+    {:else if game}
+        <GamePanel {game} />
+    {/if}
+{/await}
