@@ -6,7 +6,7 @@
         type Round,
         type Voting,
         Vote,
-    } from "$lib";
+    } from "$lib/index.svelte";
     import { SvelteMap } from "svelte/reactivity";
     import SelectLeader from "./EditRound/SelectLeader.svelte";
     import SelectPlayers from "./EditRound/SelectPlayers.svelte";
@@ -105,7 +105,7 @@
     </div>
     <div>
         <h4 class="text-xl">Selected players</h4>
-        <SelectPlayers {players} {selected_players} />
+        <SelectPlayers {players} bind:selected_players />
     </div>
     <div>
         <h4 class="text-xl">Voting</h4>
@@ -117,7 +117,13 @@
         <div
             class="border border-secondary inline-flex divide-x divide-secondary rounded-md text-xl *:px-5"
         >
-            <button onclick={() => num_fails++}>+</button>
+            <button
+                onclick={() =>
+                    (num_fails = Math.min(
+                        num_fails + 1,
+                        selected_players.length,
+                    ))}>+</button
+            >
             <button onclick={() => (num_fails = Math.max(num_fails - 1, 0))}
                 >-</button
             >

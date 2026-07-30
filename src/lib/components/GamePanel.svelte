@@ -1,6 +1,11 @@
 <script lang="ts">
     import { pushState, replaceState } from "$app/navigation";
-    import { Vote, type Game, type Player, type Round } from "$lib";
+    import {
+        Vote,
+        type Game,
+        type Player,
+        type Round,
+    } from "$lib/index.svelte";
     import EditRound from "./GamePanel/EditRound.svelte";
     import { page } from "$app/state";
 
@@ -8,10 +13,8 @@
 
     let editing_round_id: number = $state(0);
 
-    $inspect(game);
-
     function handleRound(round: Round) {
-        if (game.rounds.length <= round.id) game.rounds.push(round);
+        if (game.rounds.length <= round.id) game.add_round(round);
         else game.rounds[round.id] = round;
         replaceState("", { ...page.state, editing_round: false });
         editing_round_id = game.rounds.length;
@@ -30,7 +33,9 @@
         <td>{player.name}</td>
         {#each game.rounds as round (round.id)}
             {@const approved = round.voting.get(player) == Vote.Approve}
-            {@const selected = round.selected_players.indexOf(player) != -1}
+            {@const selected = round.selected_players.some(
+                (p) => p.id === player.id,
+            )}
             {@const game_leader = round.leader === player}
             <td>
                 <span

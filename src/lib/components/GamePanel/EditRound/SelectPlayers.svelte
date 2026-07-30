@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { Player } from "$lib";
+    import type { Player } from "$lib/index.svelte";
 
     let {
         players,
-        selected_players,
+        selected_players = $bindable(),
     }: { players: Player[]; selected_players: Player[] } = $props();
 
     function is_selected(player: Player): boolean {
