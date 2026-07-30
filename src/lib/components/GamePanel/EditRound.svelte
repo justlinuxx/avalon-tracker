@@ -23,31 +23,12 @@
     } = $props();
 
     let round_id = $state(default_values.id || 0);
-
     let leader: Player = $state(default_values.leader || players[0]);
-
     let selected_players: Player[] = $state(
         default_values.selected_players || [],
     );
-
     let voting: Voting = new SvelteMap(default_values.voting);
-
     let num_fails = $state(default_values.mission?.num_fails || 0);
-    $inspect(voting);
-
-    function selectPlayer(player: Player) {
-        if (selected_players.indexOf(player) == -1)
-            selected_players.push(player);
-        else
-            selected_players = selected_players.filter(
-                (selected_player) => selected_player != player,
-            );
-    }
-
-    function selectVote(player: Player, vote: Vote) {
-        if (voting.get(player) === vote) voting.delete(player);
-        else voting.set(player, vote);
-    }
 
     function handleSubmit() {
         let mission: Mission | undefined;

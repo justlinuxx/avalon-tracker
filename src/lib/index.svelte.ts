@@ -56,3 +56,17 @@ export function createRound({ id, leader, selected_players, voting, mission }: R
         mission
     }
 }
+
+export function replacer(key: any, value: any) {
+    if (value instanceof Map) {
+        return value.entries().toArray()
+    }
+    return value
+}
+
+export function reviver(key: any, value: any) {
+    if (key == "voting") {
+        return new Map(value)
+    }
+    return value
+}

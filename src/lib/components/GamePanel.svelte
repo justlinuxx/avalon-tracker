@@ -1,6 +1,7 @@
 <script lang="ts">
     import { pushState, replaceState } from "$app/navigation";
     import {
+        replacer,
         Vote,
         type Game,
         type Player,
@@ -138,5 +139,14 @@
         >Export Game</button
     >
 {:else}
-    <code>{JSON.stringify(game)}</code>
+    <code
+        >{JSON.stringify(
+            {
+                players: game.players,
+                rounds: $state.snapshot(game.rounds),
+                missions: game.missions,
+            },
+            replacer,
+        )}</code
+    >
 {/if}
