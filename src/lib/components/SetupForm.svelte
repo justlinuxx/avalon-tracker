@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { dev } from "$app/environment";
-    import { Game, type Player } from "$lib/index.svelte";
+    import { dev } from '$app/env';
+    import { Game, type Player } from "#lib/index.svelte.js";
     import AddPlayer from "./SetupForm/AddPlayer.svelte";
     import PlayersList from "./SetupForm/PlayersList.svelte";
 
@@ -36,8 +36,8 @@
 </script>
 
 <div class="flex flex-col gap-2">
-    <PlayersList {players} {removePlayer} />
-    <AddPlayer {addPlayer} />
+    <PlayersList players={players} removePlayer={removePlayer} />
+    <AddPlayer addPlayer={addPlayer} />
     <button
         class="border border-secondary bg-primary rounded-md p-2 font-bold text-xl"
         onclick={() => onsubmit(new Game({ players: parse_players() }))}

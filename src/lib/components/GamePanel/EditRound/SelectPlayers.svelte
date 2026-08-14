@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Player } from "$lib/index.svelte";
+    import type { Player } from "#lib/index.svelte.js";
 
     let {
         players,

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Player } from "$lib";
+    import type { Player } from "#lib";
 
     let {
         players,

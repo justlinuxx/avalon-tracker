@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { type Player, type Voting, Vote } from "$lib/index.svelte";
+    import { type Player, type Voting, Vote } from "#lib/index.svelte.js";
 
     let { players, voting }: { players: Player[]; voting: Voting } = $props();
 

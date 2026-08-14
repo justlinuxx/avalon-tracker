@@ -1,14 +1,9 @@
 <script lang="ts">
-    import { pushState, replaceState } from "$app/navigation";
-    import {
-        Vote,
-        type Game,
-        type Player,
-        type Round,
-    } from "$lib/index.svelte";
+    import { goto } from "$app/navigation";
+    import { Vote, type Game, type Player, type Round } from "#lib/index.svelte.js";
     import EditRound from "./GamePanel/EditRound.svelte";
     import { page } from "$app/state";
-    import { delete_game, save_game } from "$lib/cookies.remote";
+    import { delete_game, save_game } from "#lib/cookies.remote.js";
 
     let { game }: { game: Game } = $props();
 
@@ -18,7 +13,13 @@
         if (game.rounds.length <= round.id) game.add_round(round);
         else game.rounds[round.id] = round;
         save_game(game.to_json());
-        replaceState("", { ...page.state, editing_round: false });
+
+        goto("", {
+            shallow: true,
+            replace: true,
+            state: { ...page.state, editing_round: false }
+        });
+
         editing_round_id = game.rounds.length;
     }
 
@@ -67,10 +68,7 @@
                                     ><button
                                         onclick={() => {
                                             editing_round_id = index;
-                                            pushState("", {
-                                                ...page.state,
-                                                editing_round: true,
-                                            });
+                                            goto("", {shallow: true, state: {...page.state, editing_round: true}})
                                         }}
                                         >{index + 1} - {round.leader
                                             .name}</button
@@ -114,7 +112,7 @@
                 class="px-4 text-2xl font-bold"
                 onclick={() => {
                     editing_round_id = game.rounds.length;
-                    pushState("", { ...page.state, editing_round: true });
+                    goto("", {shallow: true, state: { ...page.state, editing_round: true }});
                 }}>+</button
             >
         </div>
@@ -135,14 +133,14 @@
     {/key}
     <button
         class="bg-primary border border-secondary rounded-md p-2 text-xl my-2"
-        onclick={() => pushState("", { ...page.state, exporting_game: true })}
+        onclick={() => goto("", { shallow: true, state: {...page.state, exporting_game: true} })}
         >Export Game</button
     >
     <button
         class="bg-primary border border-secondary rounded-md p-2 text-xl my-2"
         onclick={() => {
             delete_game();
-            pushState("", { game_running: false });
+            goto("", { shallow: true, state: { game_running: false } });
         }}>Exit Game</button
     >
 {:else}

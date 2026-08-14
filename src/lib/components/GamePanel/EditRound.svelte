@@ -6,7 +6,7 @@
         type Round,
         type Voting,
         Vote,
-    } from "$lib/index.svelte";
+    } from "#lib/index.svelte.js";
     import { SvelteMap } from "svelte/reactivity";
     import SelectLeader from "./EditRound/SelectLeader.svelte";
     import SelectPlayers from "./EditRound/SelectPlayers.svelte";
