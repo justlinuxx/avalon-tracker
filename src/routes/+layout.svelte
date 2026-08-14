@@ -1,16 +1,14 @@
 <script lang="ts">
-    import "./layout.css";
-    import favicon from "#lib/assets/favicon.svg";
+	import './layout.css';
+	import favicon from '#lib/assets/favicon.svg';
 
-    let { children } = $props();
+	let { children } = $props();
 </script>
 
 <svelte:head>
-    <link rel="icon" href={favicon} />
-    <title>Avalon Tracker</title>
+	<link rel="icon" href={favicon} />
+	<title>Avalon Tracker</title>
 </svelte:head>
-<main
-    class="bg-background min-h-screen overflow-x-scroll text-white p-2 flex flex-col"
->
-    {@render children()}
+<main class="flex min-h-screen flex-col overflow-x-scroll bg-background p-2 text-white">
+	{@render children()}
 </main>
